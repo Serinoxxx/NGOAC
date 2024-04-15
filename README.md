@@ -5,17 +5,17 @@
 - If you haven't heard of ParrelSync I highly recommend it - no more building to test your multiplayer game!
 - https://github.com/VeriorPies/ParrelSync
 
+IF you already have ClientNetworkAnimator and/or ClientNetworkTransform, you can remove these from the NGOAC folder (they're from the Unity Co-op Client Auth Example)
+
 ## Tested on:
 2022.3.21f1
 
 ## Limitations:
-This has only been tested with ClientNetworkTransform i.e. clients have authority of their positions and animations
-Late Join is not supported 
-- clients joining after another player has picked up a weapon will not see the weapon as equipped
-Projectiles (from bow/rifle) are not in sync, these should probably be spawned and owned by the server
-Clients are checking their own damage against them - this can result in pvp hits not registering, this should be flipped to an I Shot You First approach for better gameplay feel if players can damage each other
-
-IF you already have ClientNetworkAnimator and/or ClientNetworkTransform, you can remove these from the NGOAC folder (they're from the Unity Co-op Client Auth Example)
+- This has only been tested with ClientNetworkTransform i.e. clients have authority of their positions and animations
+- Late Join is not supported 
+	- clients joining after another player has picked up a weapon will not see the weapon as equipped
+- Projectiles (from bow/rifle) are not in sync, these should probably be spawned and owned by the server
+- Clients are checking their own damage against them - this can result in pvp hits not registering, this should be flipped to an I Shot You First approach for better gameplay feel if players can damage each other
 
 # Setup Instructions:
 1. Import "NGOAC.unitypackage"
