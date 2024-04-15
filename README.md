@@ -18,13 +18,14 @@ IF you already have ClientNetworkAnimator and/or ClientNetworkTransform, you can
 - Clients are checking their own damage against them - this can result in pvp hits not registering, this should be flipped to an I Shot You First approach for better gameplay feel if players can damage each other
 
 # Setup Instructions:
-1. Import "NGOAC.unitypackage"
-2. Open the "PlayGround Human (1 - Holsters)" scene (This is from the Malbers Animal Controller demo scenes)
-3. Rename "Steve" in the hierarchy to "SteveNGO"
-4. Create a NetworkPrefabs folder
-5. Drag "SteveNGO" into the folder and save as original 
+1. Download the latest unitypackage from https://github.com/Serinoxxx/NGOAC/releases/
+2. Import "NGOAC.unitypackage" into your project
+3. Open the "PlayGround Human (1 - Holsters)" scene (This is from the Malbers Animal Controller demo scenes)
+4. Rename "Steve" in the hierarchy to "SteveNGO"
+5. Create a NetworkPrefabs folder
+6. Drag "SteveNGO" into the folder and save as original 
 	- Delete SteveNGO from the scene
-6. Disable the following components on the SteveNGO prefab (make sure it's applied to the prefab)
+7. Disable the following components on the SteveNGO prefab (make sure it's applied to the prefab)
 	Animal
 	Interactor
 	MalbersInput
@@ -36,10 +37,10 @@ IF you already have ClientNetworkAnimator and/or ClientNetworkTransform, you can
 	CM Main Target -> Unity Event Raiser
 	CM Main Target -> Transform Hook
 	
-7. Add an empty GameObject to SteveNGO called "AimTransform" and add a "ClientNetworkTransform" component
+8. Add an empty GameObject to SteveNGO called "AimTransform" and add a "ClientNetworkTransform" component
 	- We only need to sync position for this, so you can disable rotation and scale
 	
-8. Add the following components to the root of SteveNGO
+9. Add the following components to the root of SteveNGO
 NetworkObject
 ClientNetworkTransform
 NetworkRigidbody
@@ -51,7 +52,7 @@ PlayerConnectedEvents - assign all of the references
 					  - Stamina Sprint Data - Stamina (Sprint) Data
 					  - Aim Target - AimTransform
 					  
-9. On the Main Canvas, add the NetworkPlayerUIController component. For UIHolsters - assign holsters and the corresponding image component e.g.
+10. On the Main Canvas, add the NetworkPlayerUIController component. For UIHolsters - assign holsters and the corresponding image component e.g.
 	- Element 0 - Back Holster 1 - Inventory/Button Back Holster/Image
 	- Element 1 - Left Holster - Inventory/Button Left Holster/Image
 	- Element 2 - Right Holster - Inventory/Button Right Holster/Image
@@ -60,24 +61,24 @@ PlayerConnectedEvents - assign all of the references
 	
 	Note*- I had to handle the weapon sprites this way because by default the AC uses events to set the sprite and the sprite is embedded in the event. We don't listen to the event (as it happens for all players) so I needed a custom solution here.
 	
-10. Add an empty gameobject to the scene called "NetworkManager" 
+11. Add an empty gameobject to the scene called "NetworkManager" 
     - add a NetworkManager component. 
 		- Set the Player Prefab to SteveNGO
 		- Select transport type "Unity Transport"
 	- Add the PlayerRegister component
 	
-11. This system relies on each weapon having a unique Index. I noticed in the demo scene the "Sword Collectable" and "Sword Collectable Fire" have the same Index.
+12. This system relies on each weapon having a unique Index. I noticed in the demo scene the "Sword Collectable" and "Sword Collectable Fire" have the same Index.
     - click on the "Sword Collectable Fire", under the Melee Weapon -> General -> General -> Click the "Generate" button on the index field to generate a unique ID.
 	- apply the change as an override for sword collectable fire
 	- repeat this for Rifle
 	- If you don't do this then the player could pick up the wrong weapon
 	
-12. Delete the -----------Characters-------------- object from the scene
+13. Delete the -----------Characters-------------- object from the scene
 	- this can cause issues with the camera
 
-13. For the shootable weapons (bow, rifle etc), set Shootable->Aiming-Aim Action to "Manual". This seems to resolve several issues
+14. For the shootable weapons (bow, rifle etc), set Shootable->Aiming-Aim Action to "Manual". This seems to resolve several issues
 
-14. (optional) on the UI/Settings Menu canvas, remove the pause input on the MInput component
+15. (optional) on the UI/Settings Menu canvas, remove the pause input on the MInput component
     - I find that pausing the host/client can cause some issues with multiplayer
 	
 ## SETUP COMPLETED!
