@@ -18,7 +18,7 @@ IF you already have ClientNetworkAnimator and/or ClientNetworkTransform, you can
 - Clients are checking their own damage against them - this can result in pvp hits not registering, this should be flipped to an I Shot You First approach for better gameplay feel if players can damage each other
 
 # Setup Instructions:
-1. Download the latest unitypackage from https://github.com/Serinoxxx/NGOAC/releases/
+1. Download the latest unitypackage from [latest releases](https://github.com/Serinoxxx/NGOAC/releases/)
 2. Import "NGOAC.unitypackage" into your project
 3. Open the "PlayGround Human (1 - Holsters)" scene (This is from the Malbers Animal Controller demo scenes)
 4. Rename "Steve" in the hierarchy to "SteveNGO"
