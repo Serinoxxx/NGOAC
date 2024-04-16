@@ -44,11 +44,11 @@ IF you already have ClientNetworkAnimator and/or ClientNetworkTransform, you can
 - NetworkObject
 - ClientNetworkTransform
 - NetworkRigidbody
-- ClientNetworkAnimator - assign the animator property
-- PlayerConnectedEvents - assign all of the references
+- ClientNetworkAnimator: assign the animator property
+- PlayerConnectedEvents: assign all of the references
 	- Camera Event Raiser -> CM Main Target
-	- Camera Transform Hook -> CM Main Targe
- - Pick Up Drop -> Interactions
+ - Camera Transform Hook -> CM Main Target
+	- Pick Up Drop -> Interactions
 	- Stamina Sprint Data -> Stamina (Sprint) Data
 	- Aim Target -> AimTransform
 					  
