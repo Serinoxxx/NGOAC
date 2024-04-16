@@ -26,26 +26,26 @@ IF you already have ClientNetworkAnimator and/or ClientNetworkTransform, you can
 6. Drag "SteveNGO" into the folder and save as original 
 	- Delete SteveNGO from the scene
 7. Disable the following components on the SteveNGO prefab (make sure it's applied to the prefab)
-	Animal
-	Interactor
-	MalbersInput
-	States
-	EventListener
-	MDamageable
-	Collider(Interactor)
-	Stamina Sprint Data (disable the whole gameObject)
-	CM Main Target -> Unity Event Raiser
-	CM Main Target -> Transform Hook
+	- Animal
+	- Interactor
+	- MalbersInput
+	- States
+	- EventListener
+	- MDamageable
+	- Collider(Interactor)
+	- Stamina Sprint Data (disable the whole gameObject)
+	- CM Main Target -> Unity Event Raiser
+	- CM Main Target -> Transform Hook
 	
 8. Add an empty GameObject to SteveNGO called "AimTransform" and add a "ClientNetworkTransform" component
 	- We only need to sync position for this, so you can disable rotation and scale
 	
 9. Add the following components to the root of SteveNGO
-NetworkObject
-ClientNetworkTransform
-NetworkRigidbody
-ClientNetworkAnimator - assign the animator property
-PlayerConnectedEvents - assign all of the references
+- NetworkObject
+- ClientNetworkTransform
+- NetworkRigidbody
+- ClientNetworkAnimator - assign the animator property
+- PlayerConnectedEvents - assign all of the references
 					  - Camera Event Raiser - CM Main Target
 					  - Camera Transform Hook - CM Main Target
 					  - Pick Up Drop - Interactions
