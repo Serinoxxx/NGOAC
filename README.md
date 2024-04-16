@@ -46,11 +46,11 @@ IF you already have ClientNetworkAnimator and/or ClientNetworkTransform, you can
 - NetworkRigidbody
 - ClientNetworkAnimator - assign the animator property
 - PlayerConnectedEvents - assign all of the references
-					  - Camera Event Raiser - CM Main Target
-					  - Camera Transform Hook - CM Main Target
-					  - Pick Up Drop - Interactions
-					  - Stamina Sprint Data - Stamina (Sprint) Data
-					  - Aim Target - AimTransform
+	- Camera Event Raiser -> CM Main Target
+	- Camera Transform Hook -> CM Main Targe
+ - Pick Up Drop -> Interactions
+	- Stamina Sprint Data -> Stamina (Sprint) Data
+	- Aim Target -> AimTransform
 					  
 10. On the Main Canvas, add the NetworkPlayerUIController component. For UIHolsters - assign holsters and the corresponding image component e.g.
 	- Element 0 - Back Holster 1 - Inventory/Button Back Holster/Image
