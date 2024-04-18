@@ -52,7 +52,7 @@ namespace MalbersAnimations.NetCode
                 if (holsterID == uiHolster.holster)
                 { 
                     // Found a weapon in this holster, set the sprite
-                    var sprite = weaponSpriteMap.weaponSpriteMap.First(x=>x.weaponID =  weaponID).sprite;
+                    var sprite = weaponSpriteMap.weaponSpriteMap.First(x=>x.weaponID == weaponID).sprite;
                     uiHolster.image.sprite = sprite;
                 }
             }
