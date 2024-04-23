@@ -15,7 +15,8 @@ namespace MalbersAnimations.NetCode
         [SerializeField] TransformHook cameraTransformHook;
         private MalbersInput malbersInput;
         private MAnimal mAnimal;
-        private Stats stats;
+        [SerializeField] private Stats statsLocal;
+        [SerializeField] private Stats statsRemote;
         private MEventListener eventListener;
         private MDamageable damageable;
 
@@ -28,6 +29,9 @@ namespace MalbersAnimations.NetCode
         private Aim aim;
         [SerializeField] Transform aimTarget;
 
+        [SerializeField] StatID healthStatID;
+        [SerializeField] StatID staminaStatID;
+
         public override void OnNetworkSpawn()
         {
             PlayerRegister.Instance.AddPlayer(this.NetworkObject);
@@ -37,24 +41,30 @@ namespace MalbersAnimations.NetCode
             mAnimal = GetComponentInChildren<MAnimal>();
             interactor = GetComponentInChildren<MInteractor>();
             malbersInput = GetComponentInChildren<MalbersInput>();
-            stats = GetComponentInChildren<Stats>();
             eventListener = GetComponentInChildren<MEventListener>();
             weaponManager = GetComponentInChildren<MWeaponManager>();
             inventory = GetComponentInChildren<MInventory>();
             damageable = GetComponentInChildren<MDamageable>();
 
+            if (IsServer)
+            {
+                //Host/Server manages damage
+                EnableComponentIfNotNull(damageable);
+            }
+
             if (IsOwner)
             {
+                Destroy(statsRemote);
+                damageable.stats = statsLocal;
+
                 // Enable Player Specific Components
                 EnableComponentIfNotNull(cameraEventRaiser);
                 EnableComponentIfNotNull(cameraTransformHook);
                 EnableComponentIfNotNull(malbersInput);
                 EnableComponentIfNotNull(mAnimal);
-                EnableComponentIfNotNull(stats);
                 EnableComponentIfNotNull(eventListener);
                 EnableComponentIfNotNull(weaponManager);
                 EnableComponentIfNotNull(inventory);
-                EnableComponentIfNotNull(damageable);
 
                 if (interactor != null)
                 {
@@ -70,7 +80,7 @@ namespace MalbersAnimations.NetCode
 
                 if (staminaSprintData != null)
                 {
-                    
+
                     staminaSprintData.SetActive(true);
                 }
                 else
@@ -93,6 +103,9 @@ namespace MalbersAnimations.NetCode
 
             if (!IsOwner)
             {
+                Destroy(statsLocal);
+                damageable.stats = statsRemote;
+
                 //If this is not ours then set the aim target
                 aim.AimTarget = aimTarget;
 
@@ -102,6 +115,31 @@ namespace MalbersAnimations.NetCode
                 //Shrink the pickup collider so it doesn't trigger UI events (can't seem to disable it, or other components re-enable it)
                 var pickupCollider = interactor.GetComponentInChildren<BoxCollider>();
                 pickupCollider.size = Vector3.zero;
+
+                ////We don't want to display the UI effects when health changes
+                //var healthStat = statsLocal.stats.Find(x => x.ID == healthStatID);
+                //if (healthStat != null)
+                //{
+                //    healthStat.SetActive(false);
+                //}
+                //else
+                //{
+                //    Debug.LogError("Health stat is not found!");
+                //}
+
+
+                ////We don't want to display the UI effects when stamina changes
+                //var staminaStat = statsLocal.stats.Find(x => x.ID == staminaStatID);
+                //if (staminaStat != null)
+                //{
+                //    staminaStat.SetActive(false);
+                //}
+                //else
+                //{
+                //    Debug.LogError("Stamina stat is not found!");
+                //}
+
+
             }
         }
 
