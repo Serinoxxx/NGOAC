@@ -1,8 +1,8 @@
-using Codice.CM.Common;
 using MalbersAnimations.Reactions;
 using Mono.CSharp;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 namespace MalbersAnimations.NetCode
@@ -10,7 +10,6 @@ namespace MalbersAnimations.NetCode
     public class ServerAuthDamageable : MDamageable
     {
         [SerializeField] NetworkDamageable networkDamageable;
-
 
         public override void ReceiveDamage(Vector3 Direction, Vector3 Position, GameObject Damager, StatModifier damage, bool isCritical, bool react, Reaction customReaction, bool pureDamage, StatElement element)
         {
@@ -22,4 +21,11 @@ namespace MalbersAnimations.NetCode
             base.ReceiveDamage(Direction, Position, Damager, damage, isCritical, react, customReaction, pureDamage, element);
         }
     }
+
+#if UNITY_EDITOR
+    [CustomEditor(typeof(ServerAuthDamageable))]
+    public class ServerAuthDamageableEditor : MDamageableEditor
+    {
+    }
+#endif
 }
