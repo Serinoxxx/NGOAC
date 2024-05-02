@@ -15,12 +15,12 @@ public class NetworkAnimal : NetworkBehaviour
         _animal = GetComponent<MAnimal>();
     }
 
-    public void ActivateMode(ModeID ModeID)
+    public void ActivateMode(int ModeID)
     {
         if (IsServer && !IsOwner)
         {
             Debug.Log($"SERVER: Sending activate mode {ModeID} to owner");
-            ActivateModeRpc(ModeID.ID);
+            ActivateModeRpc(ModeID);
         }
         else
         {
