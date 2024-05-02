@@ -9,17 +9,28 @@ namespace MalbersAnimations.NetCode
 {
     public class ServerAuthAnimal : MAnimal
     {
-        [SerializeField] NetworkObject _networkObject;
+        NetworkAnimal _networkAnimal;
 
-        public override void Mode_Activate(ModeID ModeID)
-        {
-            base.Mode_Activate(ModeID.ID);
-        }
+        //These simply don't work
+        //public override void Mode_Activate(ModeID ModeID)
+        //{
+        //    Debug.Log("modeActivate0");
+        //    base.Mode_Activate(ModeID);
+        //}
 
-        [Rpc(SendTo.Owner)]
-        private void Mode_ActivateRpc(int modeID)
+        //public new bool Mode_TryActivate(int ModeID, int AbilityIndex)
+        //{
+        //    Debug.Log("modeTryactivate");
+        //    return base.Mode_TryActivate(ModeID, AbilityIndex);
+        //}
+
+        private NetworkAnimal GetNetworkAnimal()
         {
-            base.Mode_Activate(modeID);
+            if (_networkAnimal != null)
+            {
+                _networkAnimal = GetComponent<NetworkAnimal>();
+            }
+            return _networkAnimal;
         }
     }
 
@@ -27,6 +38,7 @@ namespace MalbersAnimations.NetCode
     [CustomEditor(typeof(ServerAuthAnimal))]
     public class ServerAuthAnimalEditor : MAnimalEditor
     {
+
     }
 #endif
 }
