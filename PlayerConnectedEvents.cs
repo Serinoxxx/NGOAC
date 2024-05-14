@@ -214,7 +214,8 @@ namespace MalbersAnimations.NetCode
         {
             // Find the unique Id for the weapon to send to server and request pickup
             var weapon = weaponGO.GetComponent<MWeapon>();
-            var uniqueWeaponId = weapon.WeaponID;
+            var networkWeapon = weaponGO.GetComponent<NetworkWeapon>();
+            var uniqueWeaponId = networkWeapon.networkID;
             EquipWeaponServerRpc(uniqueWeaponId);
             Debug.Log($"Owner: I'm picking up weapon id: {uniqueWeaponId}");
 
@@ -239,7 +240,7 @@ namespace MalbersAnimations.NetCode
         void EquipWeaponClientRpc(int uniqueWeaponId)
         {
             Debug.Log($"Client: the server told me that {gameObject.name} is picking up id: {uniqueWeaponId}");
-            var weapon = FindObjectsByType<MWeapon>(FindObjectsSortMode.None).First(x => x.WeaponID == uniqueWeaponId);
+            var weapon = FindObjectsByType<NetworkWeapon>(FindObjectsSortMode.None).First(x => x.networkID == uniqueWeaponId);
             if (weapon != null)
             {
                 var pickable = weapon.GetComponent<Pickable>();
