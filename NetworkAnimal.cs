@@ -1,9 +1,13 @@
 using MalbersAnimations;
 using MalbersAnimations.Controller;
+using MalbersAnimations.Weapons;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
+using UnityEditor;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class NetworkAnimal : NetworkBehaviour
 {
@@ -20,7 +24,7 @@ public class NetworkAnimal : NetworkBehaviour
     {
         base.OnNetworkSpawn();
         Debug.Log("Spawning...");
-        Invoke(nameof(GetComponentsDelayed),0.1f);
+        Invoke(nameof(GetComponentsDelayed), 0.1f);
     }
 
     // PlayerConectedEvents will add/remove some components, so we need to retrieve the components after a short delay
@@ -68,6 +72,41 @@ public class NetworkAnimal : NetworkBehaviour
     {
         Debug.Log($"RPC CLIENT: activating mode {ModeID}");
         _animal.Mode_TryActivate(ModeID);
+    }
+
+    public void SpawnProjectileOnOtherClients(GameObject projectileGO)
+    {
+        Debug.Log("SpawnProjectileOnOtherClients method called.");
+        // Send the RPC to all clients except the one invoking the RPC to spawn the projectile with the same trajectory
+        var projectile = projectileGO.GetComponent<MProjectile>();
+        SpawnProjectileOnOtherClientsRpc(projectileGO.transform.position, projectileGO.transform.rotation, projectile.Velocity, projectile.Gravity);
+    }
+
+    Vector3 projectilePosition;
+    Quaternion projectileRotation;
+    Vector3 projectileVelocity;
+    Vector3 projectileGravity;
+    [Rpc(SendTo.NotMe)]
+    private void SpawnProjectileOnOtherClientsRpc(Vector3 position, Quaternion rotation, Vector3 velocity, Vector3 gravity)
+    {
+        projectilePosition = position;
+        projectileRotation = rotation;
+        projectileVelocity = velocity;
+        projectileGravity = gravity;
+        Debug.Log("SpawnProjectileOnOtherClientsRpc method called.");
+        var mShootable = GetComponentInChildren<MShootable>();
+        mShootable.EquipProjectile();
+        mShootable.OnFireProjectile.AddListener(PrepareProjectile);
+        mShootable.FireProjectile();
+        mShootable.OnFireProjectile.RemoveListener(PrepareProjectile);
+    }
+
+    private void PrepareProjectile(GameObject projectileGO)
+    {
+        var projectile = projectileGO.GetComponent<MProjectile>();
+        Debug.Log("PositionAndRotateProjectile method called.");
+        projectile.Prepare(gameObject,projectileGravity,projectileVelocity,projectile.m_hitLayer,projectile.TriggerInteraction);
+        projectileGO.transform.SetPositionAndRotation(projectilePosition, projectileRotation);
     }
 }
 

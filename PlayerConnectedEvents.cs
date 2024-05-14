@@ -239,7 +239,7 @@ namespace MalbersAnimations.NetCode
         void EquipWeaponClientRpc(int uniqueWeaponId)
         {
             Debug.Log($"Client: the server told me that {gameObject.name} is picking up id: {uniqueWeaponId}");
-            var weapon = FindObjectsOfType<MWeapon>().First(x => x.WeaponID == uniqueWeaponId);
+            var weapon = FindObjectsByType<MWeapon>(FindObjectsSortMode.None).First(x => x.WeaponID == uniqueWeaponId);
             if (weapon != null)
             {
                 var pickable = weapon.GetComponent<Pickable>();
