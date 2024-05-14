@@ -10,24 +10,33 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0c0365f155d935243b3c2a6d3c61c45b, type: 3}
-  m_Name: DemoWeaponSpriteMapping
+  m_Name: WeaponDetails
   m_EditorClassIdentifier: 
-  weaponSpriteMap:
-  - weaponID: {fileID: 11400000, guid: 87cd5a9f71d66f84493bd68df8277f21, type: 2}
-    sprite: {fileID: 21300000, guid: 4f16af4c2951d2d4e871708dd632c84a, type: 3}
-  - weaponID: {fileID: 11400000, guid: 011ef3104a8cb334ca00baaf88478ebd, type: 2}
-    sprite: {fileID: 21300000, guid: e5104606edd259f42964eb58891dac1f, type: 3}
+  weaponDetails:
   - weaponID: {fileID: 11400000, guid: dc411047be38d924fbfc67128f6957f2, type: 2}
-    sprite: {fileID: 21300000, guid: f7add634a0356854fb9366a15d50a535, type: 3}
-  - weaponID: {fileID: 11400000, guid: 43666c8e1a066754ea91031d4303549a, type: 2}
-    sprite: {fileID: 21300000, guid: f2eebb54b252149469494b398a3aa04a, type: 3}
-  - weaponID: {fileID: 11400000, guid: e359152068b217a4faa2410144e91b19, type: 2}
-    sprite: {fileID: 21300000, guid: fb0c7a368d0bf6a4aae48fd86a5a9929, type: 3}
+    sprite: {fileID: 21300000, guid: 4f16af4c2951d2d4e871708dd632c84a, type: 3}
+    weaponName: Axe
   - weaponID: {fileID: 11400000, guid: 29bdac49b8510e74db1c074ba91fbe3f, type: 2}
     sprite: {fileID: 21300000, guid: 5427c7fad2316db4f911e1b6edb216e3, type: 3}
-  - weaponID: {fileID: 11400000, guid: 683e32c1ec7694b4fb04342cb42f10b4, type: 2}
-    sprite: {fileID: 21300000, guid: 978818552c237024ba7faf4a44e01f94, type: 3}
-  - weaponID: {fileID: 11400000, guid: bc152cce0c59f75449c82f1c21a5b893, type: 2}
-    sprite: {fileID: 21300000, guid: abbb63880d43bb94abeb5cd34ae83e1e, type: 3}
+    weaponName: Spear
+  - weaponID: {fileID: 11400000, guid: 87cd5a9f71d66f84493bd68df8277f21, type: 2}
+    sprite: {fileID: 21300000, guid: 4f16af4c2951d2d4e871708dd632c84a, type: 3}
+    weaponName: 2H Axe
+  - weaponID: {fileID: 11400000, guid: 011ef3104a8cb334ca00baaf88478ebd, type: 2}
+    sprite: {fileID: 21300000, guid: e5104606edd259f42964eb58891dac1f, type: 3}
+    weaponName: Bow
+  - weaponID: {fileID: 11400000, guid: 43666c8e1a066754ea91031d4303549a, type: 2}
+    sprite: {fileID: 21300000, guid: f2eebb54b252149469494b398a3aa04a, type: 3}
+    weaponName: Pistol
+  - weaponID: {fileID: 11400000, guid: e359152068b217a4faa2410144e91b19, type: 2}
+    sprite: {fileID: 21300000, guid: fb0c7a368d0bf6a4aae48fd86a5a9929, type: 3}
+    weaponName: Rifle
   - weaponID: {fileID: 11400000, guid: e9eaa24ae7382eb4f97d3484ea3e6e57, type: 2}
-    sprite: {fileID: 21300000, guid: abbb63880d43bb94abeb5cd34ae83e1e, type: 3}
+    sprite: {fileID: 21300000, guid: 91a64f749ce1c9942acc52bd955e7931, type: 3}
+    weaponName: Rock
+  - weaponID: {fileID: 11400000, guid: bc152cce0c59f75449c82f1c21a5b893, type: 2}
+    sprite: {fileID: 21300000, guid: 705f0467455c3f0479897da07daeb0be, type: 3}
+    weaponName: Staff
+  - weaponID: {fileID: 11400000, guid: 683e32c1ec7694b4fb04342cb42f10b4, type: 2}
+    sprite: {fileID: 21300000, guid: 0579b86233f138a43b5a174d669f362b, type: 3}
+    weaponName: Spell

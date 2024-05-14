@@ -6,16 +6,18 @@ using UnityEngine;
 namespace MalbersAnimations.NetCode
 {
     [System.Serializable]
-    [CreateAssetMenu(menuName = "Malbers Animations/Netcode/WeaponSpriteMapping", fileName = "New Weapon Sprite Mapping")]
-    public class WeaponSpriteMappingSO : ScriptableObject
+    [CreateAssetMenu(menuName = "Malbers Animations/Netcode/WeaponDetailsSO", fileName = "New Weapon Details")]
+    public class WeaponDetailsSO : ScriptableObject
     {
         [System.Serializable]
-        public class WeaponSprite
+        public class WeaponDetail
         {
             public WeaponID weaponID;
             public Sprite sprite;
+            public string weaponName;
         }
 
-        public WeaponSprite[] weaponSpriteMap;
+        public WeaponDetail[] weaponDetails;
+        
     }
 }

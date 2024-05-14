@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -15,7 +16,8 @@ namespace MalbersAnimations.NetCode
     public class NetworkPlayerUIController : MonoBehaviour
     {
         [SerializeField] List<UIHolster> UIHolsters;
-        [SerializeField] WeaponSpriteMappingSO weaponSpriteMap;
+        [SerializeField] Text UIWeaponNameText;
+        [SerializeField] WeaponDetailsSO weaponDetails;
 
         MInventory playerInventory;
 
@@ -52,8 +54,10 @@ namespace MalbersAnimations.NetCode
                 if (holsterID == uiHolster.holster)
                 { 
                     // Found a weapon in this holster, set the sprite
-                    var sprite = weaponSpriteMap.weaponSpriteMap.First(x=>x.weaponID == weaponID).sprite;
+                    var weaponDetail = weaponDetails.weaponDetails.First(x=>x.weaponID == weaponID);
+                    var sprite = weaponDetail.sprite;
                     uiHolster.image.sprite = sprite;
+                    UIWeaponNameText.text = weaponDetail.weaponName;
                 }
             }
 
