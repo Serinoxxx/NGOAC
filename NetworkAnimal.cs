@@ -1,9 +1,11 @@
 using MalbersAnimations;
 using MalbersAnimations.Controller;
+using MalbersAnimations.NetCode;
 using MalbersAnimations.Weapons;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Unity.Netcode;
 using UnityEditor;
 using UnityEngine;
@@ -11,7 +13,7 @@ using UnityEngine.Events;
 
 public class NetworkAnimal : NetworkBehaviour
 {
-    MAnimal _animal;
+    ServerAuthAnimal _animal;
     Stats _stats;
 
     public NetworkVariable<float> _healthValue = new NetworkVariable<float>(writePerm: NetworkVariableWritePermission.Owner);
@@ -25,13 +27,28 @@ public class NetworkAnimal : NetworkBehaviour
         base.OnNetworkSpawn();
         Debug.Log("Spawning...");
         Invoke(nameof(GetComponentsDelayed), 0.1f);
+        
     }
 
     // PlayerConectedEvents will add/remove some components, so we need to retrieve the components after a short delay
     void GetComponentsDelayed()
     {
-        _animal = GetComponent<MAnimal>();
+        _animal = GetComponent<ServerAuthAnimal>();
         _stats = GetComponent<Stats>();
+        _animal.OnStateChange.AddListener(OnStateChangeHandler);
+    }
+
+    private void OnStateChangeHandler(int stateID)
+    {
+        Debug.Log($"Informing others of new state: {stateID}");
+        StateChangedRpc(stateID);
+    }
+
+        [Rpc(SendTo.NotOwner)]
+    private void StateChangedRpc(int stateID)
+    {
+        Debug.Log($"Received new state: {stateID}");
+        _animal.Set_State(stateID);
     }
 
     private void FixedUpdate()
@@ -105,7 +122,7 @@ public class NetworkAnimal : NetworkBehaviour
     {
         var projectile = projectileGO.GetComponent<MProjectile>();
         Debug.Log("PositionAndRotateProjectile method called.");
-        projectile.Prepare(gameObject,projectileGravity,projectileVelocity,projectile.m_hitLayer,projectile.TriggerInteraction);
+        projectile.Prepare(gameObject, projectileGravity, projectileVelocity, projectile.m_hitLayer, projectile.TriggerInteraction);
         projectileGO.transform.SetPositionAndRotation(projectilePosition, projectileRotation);
     }
 }

@@ -1,4 +1,5 @@
 using MalbersAnimations.Controller;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
@@ -9,7 +10,11 @@ namespace MalbersAnimations.NetCode
 {
     public class ServerAuthAnimal : MAnimal
     {
-        NetworkAnimal _networkAnimal;
+
+        public void Set_State(int stateID)
+        {
+            activeState = State_Get(stateID);
+        }
 
         //These simply don't work
         //public override void Mode_Activate(ModeID ModeID)
@@ -24,14 +29,14 @@ namespace MalbersAnimations.NetCode
         //    return base.Mode_TryActivate(ModeID, AbilityIndex);
         //}
 
-        private NetworkAnimal GetNetworkAnimal()
-        {
-            if (_networkAnimal != null)
-            {
-                _networkAnimal = GetComponent<NetworkAnimal>();
-            }
-            return _networkAnimal;
-        }
+        // private NetworkAnimal GetNetworkAnimal()
+        // {
+        //     if (_networkAnimal == null)
+        //     {
+        //         _networkAnimal = GetComponent<NetworkAnimal>();
+        //     }
+        //     return _networkAnimal;
+        // }
     }
 
 #if UNITY_EDITOR
