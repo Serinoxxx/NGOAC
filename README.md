@@ -29,7 +29,7 @@ IF you already have ClientNetworkAnimator and/or ClientNetworkTransform, you can
 	- Animal
 	- Interactor
 	- MalbersInput
-	- States
+	- Stats
 	- EventListener
 	- MDamageable
 	- Collider(Interactor)
