@@ -6,6 +6,7 @@ using MalbersAnimations.Weapons;
 using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace MalbersAnimations.NetCode
 {
@@ -32,6 +33,11 @@ namespace MalbersAnimations.NetCode
         [SerializeField] StatID healthStatID;
         [SerializeField] StatID staminaStatID;
 
+        private void Start()
+        {
+            mAnimal.ResetController();
+        }
+
         public override void OnNetworkSpawn()
         {
             PlayerRegister.Instance.AddPlayer(this.NetworkObject);
@@ -45,6 +51,9 @@ namespace MalbersAnimations.NetCode
             weaponManager = GetComponentInChildren<MWeaponManager>();
             inventory = GetComponentInChildren<MInventory>();
             damageable = GetComponentInChildren<MDamageable>();
+
+            // Make sure to find the camera after the player connects
+            mAnimal.FindCamera();
 
             if (IsServer)
             {
@@ -65,6 +74,8 @@ namespace MalbersAnimations.NetCode
                 EnableComponentIfNotNull(eventListener);
                 EnableComponentIfNotNull(weaponManager);
                 EnableComponentIfNotNull(inventory);
+
+                mAnimal.ResetController();
 
                 if (interactor != null)
                 {
@@ -180,6 +191,17 @@ namespace MalbersAnimations.NetCode
                 Debug.LogWarning($"Attempting to enable a null component:{component.name}");
             }
         }
+
+        // private void Update()
+        // {
+        //     if (mAnimal != null)
+        //     {
+        //         if (mAnimal.MainCamera == null)
+        //         {
+        //             mAnimal.ResetController();
+        //         }
+        //     }
+        // }
 
         private void LateUpdate()
         {
