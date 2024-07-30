@@ -93,7 +93,10 @@ public class NetworkAnimal : NetworkBehaviour
             if (ability != null)
             {
                 ability.OnEnter?.Invoke();  
-                ability.audioSource?.Play();
+                if (ability.audioSource != null)
+                {
+                    ability.audioSource.Play();
+                }
             }  
         }
     }
