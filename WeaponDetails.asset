@@ -40,3 +40,6 @@ MonoBehaviour:
   - weaponID: {fileID: 11400000, guid: 683e32c1ec7694b4fb04342cb42f10b4, type: 2}
     sprite: {fileID: 21300000, guid: 0579b86233f138a43b5a174d669f362b, type: 3}
     weaponName: Spell
+  - weaponID: {fileID: 11400000, guid: 82777b65eb2643a4788da6976799e1b2, type: 2}
+    sprite: {fileID: 21300000, guid: 60018d60136903e4498f78002482cfc6, type: 3}
+    weaponName: 2H Log

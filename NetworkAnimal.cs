@@ -5,6 +5,7 @@ using MalbersAnimations.Weapons;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using Unity.Netcode;
 using UnityEditor;
@@ -36,10 +37,92 @@ public class NetworkAnimal : NetworkBehaviour
         _animal = GetComponent<ServerAuthAnimal>();
         _stats = GetComponent<Stats>();
         _animal.OnStateChange.AddListener(OnStateChangeHandler);
+        _animal.OnModeStart.AddListener(ActivateMode);
+        _animal.OnModeEnd.AddListener(DeactivateMode);
+
+        if (IsOwner)
+        {
+            foreach (var attackTrigger in GetComponentsInChildren<MAttackTrigger>())
+            {
+                attackTrigger.OnHitPosition.AddListener((x) => HandleAttackTrigger(x, attackTrigger.Index)); //Add the Hit Event to the attackTrigger.transform);
+            }
+        }
+    }
+
+    void HandleAttackTrigger(Vector3 position, int attackTriggerIndex)
+    {
+        AttackTriggerHitRpc(attackTriggerIndex, position);
+    }
+
+    [Rpc(SendTo.NotOwner)]
+    void AttackTriggerHitRpc(int attackTriggerIndex, Vector3 position)
+    {
+        Debug.Log("RPC CLIENT: attack trigger " + attackTriggerIndex + " hit");
+        var attackTrigger = GetComponentsInChildren<MAttackTrigger>().FirstOrDefault(x=>x.Index == attackTriggerIndex);
+        if (attackTrigger != null)
+        {
+            Debug.Log("Found attack trigger with index " + attackTriggerIndex);
+            if (attackTrigger.HitEffect != null)
+            {
+                Debug.Log("Spawning hit effect at " + position);
+                Instantiate(attackTrigger.HitEffect, position, Quaternion.identity);
+            }
+            
+        }
+        else
+        {
+            Debug.LogWarning("No attack trigger found with index " + attackTriggerIndex);
+        }
+    }
+
+    private void ActivateMode(int modeId, int abilityId)
+    {
+        ActivateModeRpc(modeId,abilityId);
+    }
+
+    [Rpc(SendTo.NotOwner)]
+    private void ActivateModeRpc(int modeId, int abilityId)
+    {
+        Debug.Log("RPC CLIENT: activating mode " + modeId + " ability " + abilityId);
+
+        var mode = _animal.modes.FirstOrDefault(x=>x.ID.ID == modeId);
+        if (mode != null)
+        {
+            mode.OnEnterMode?.Invoke();
+            var ability = mode.Abilities.FirstOrDefault(x=>x.Index.Value == abilityId);
+            if (ability != null)
+            {
+                ability.OnEnter?.Invoke();  
+                ability.audioSource?.Play();
+            }  
+        }
+    }
+
+    private void DeactivateMode(int modeId, int abilityId)
+    {
+        DeactivateModeRpc(modeId,abilityId);
+    }
+
+    [Rpc(SendTo.NotOwner)]
+    private void DeactivateModeRpc(int modeId, int abilityId)
+    {
+        Debug.Log("RPC CLIENT: deactivating mode " + modeId + " ability " + abilityId);
+        var mode = _animal.modes.FirstOrDefault(x=>x.ID.ID == modeId);
+        if (mode != null)
+        {
+            mode.OnExitMode?.Invoke();
+            var ability = mode.Abilities.FirstOrDefault(x=>x.Index.Value == abilityId);
+            if (ability != null)
+            {
+                ability.OnExit?.Invoke();  
+            }  
+        }
     }
 
     private void OnStateChangeHandler(int stateID)
     {
+        if (!IsOwner) return;
+
         Debug.Log($"Informing others of new state: {stateID}");
         StateChangedRpc(stateID);
     }
@@ -49,6 +132,7 @@ public class NetworkAnimal : NetworkBehaviour
     {
         Debug.Log($"Received new state: {stateID}");
         _animal.Set_State(stateID);
+        _animal.OnStateChange?.Invoke(stateID);
     }
 
     private void FixedUpdate()

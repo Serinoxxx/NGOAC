@@ -232,10 +232,16 @@ namespace MalbersAnimations.NetCode
         #endregion
 
         #region WeaponManagerEvents
+
+        MWeapon currentWeapon;
         void OnEquippedWeapon(GameObject weaponGO)
         {
             // Find the unique Id for the weapon to send to server and request pickup
             var weapon = weaponGO.GetComponent<MWeapon>();
+
+            //We own this weapon, so call the rpc to replicate a hit when we deal damage
+            weapon.OnHitPosition.AddListener((x)=>WeaponHitHandler(x));
+
             var networkWeapon = weaponGO.GetComponent<NetworkWeapon>();
             var uniqueWeaponId = networkWeapon.networkID;
             EquipWeaponServerRpc(uniqueWeaponId);
@@ -243,7 +249,22 @@ namespace MalbersAnimations.NetCode
 
             // Tell the UI to update, must be done here so other clients don't updat their UI
             NetworkPlayerUIController.Instance.UpdateInventoryUI(weapon.Holster, weapon.WeaponMode);
+        }
 
+        void WeaponHitHandler(Vector3 position)
+        {
+            WeaponHitRpc(position);
+        }
+        [Rpc(SendTo.NotOwner)]
+        void WeaponHitRpc(Vector3 position)
+        {
+            if (currentWeapon == null)
+            {
+                return;
+            }
+
+            currentWeapon.OnHit?.Invoke(currentWeapon.transform);
+            Instantiate(currentWeapon.HitEffect, position, Quaternion.identity);
         }
 
         [Rpc(SendTo.Server)]
@@ -265,6 +286,7 @@ namespace MalbersAnimations.NetCode
             var weapon = FindObjectsByType<NetworkWeapon>(FindObjectsSortMode.None).First(x => x.networkID == uniqueWeaponId);
             if (weapon != null)
             {
+                currentWeapon = weapon.GetComponent<MWeapon>();
                 var pickable = weapon.GetComponent<Pickable>();
                 pickUpDrop.Item = pickable;
                 pickUpDrop.PickUpItem();
@@ -278,7 +300,9 @@ namespace MalbersAnimations.NetCode
 
         private void OnUnequipWeapon(GameObject weaponGO)
         {
+            currentWeapon = null;
             var weapon = weaponGO.GetComponent<MWeapon>();
+            weapon.OnHitPosition.RemoveListener((x)=> WeaponHitHandler(x));
             NetworkPlayerUIController.Instance.UpdateInventoryUI(weapon.Holster, weapon.WeaponMode);
         }
         #endregion
