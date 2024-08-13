@@ -3,6 +3,7 @@ using MalbersAnimations.Events;
 using MalbersAnimations.Scriptables;
 using MalbersAnimations.Utilities;
 using MalbersAnimations.Weapons;
+using System;
 using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
@@ -33,6 +34,11 @@ namespace MalbersAnimations.NetCode
         [SerializeField] StatID healthStatID;
         [SerializeField] StatID staminaStatID;
 
+        public Transform GetMainCameraTarget()
+        {
+            return cameraTransformHook.transform;
+        }
+
         private void Start()
         {
             mAnimal.ResetController();
@@ -54,7 +60,6 @@ namespace MalbersAnimations.NetCode
 
             // Make sure to find the camera after the player connects
             mAnimal.FindCamera();
-
             if (IsServer)
             {
                 //Host/Server manages damage
@@ -127,29 +132,6 @@ namespace MalbersAnimations.NetCode
                 var pickupCollider = interactor.GetComponentInChildren<BoxCollider>();
                 pickupCollider.size = Vector3.zero;
 
-                ////We don't want to display the UI effects when health changes
-                //var healthStat = statsLocal.stats.Find(x => x.ID == healthStatID);
-                //if (healthStat != null)
-                //{
-                //    healthStat.SetActive(false);
-                //}
-                //else
-                //{
-                //    Debug.LogError("Health stat is not found!");
-                //}
-
-
-                ////We don't want to display the UI effects when stamina changes
-                //var staminaStat = statsLocal.stats.Find(x => x.ID == staminaStatID);
-                //if (staminaStat != null)
-                //{
-                //    staminaStat.SetActive(false);
-                //}
-                //else
-                //{
-                //    Debug.LogError("Stamina stat is not found!");
-                //}
-
 
             }
         }
@@ -192,17 +174,6 @@ namespace MalbersAnimations.NetCode
             }
         }
 
-        // private void Update()
-        // {
-        //     if (mAnimal != null)
-        //     {
-        //         if (mAnimal.MainCamera == null)
-        //         {
-        //             mAnimal.ResetController();
-        //         }
-        //     }
-        // }
-
         private void LateUpdate()
         {
             //The owner should update the position of the aimTarget. The networkTransform component will send the updates to other clients
@@ -242,13 +213,40 @@ namespace MalbersAnimations.NetCode
             //We own this weapon, so call the rpc to replicate a hit when we deal damage
             weapon.OnHitPosition.AddListener((x)=>WeaponHitHandler(x));
 
+            if (weapon is MShootable)
+            {
+                ((MShootable)weapon).OnFireProjectile.AddListener((x) => HandleProjectile(x)); //Call the event for the weapon
+            }
+
             var networkWeapon = weaponGO.GetComponent<NetworkWeapon>();
             var uniqueWeaponId = networkWeapon.networkID;
+            currentWeapon = weapon;
             EquipWeaponServerRpc(uniqueWeaponId);
             Debug.Log($"Owner: I'm picking up weapon id: {uniqueWeaponId}");
 
             // Tell the UI to update, must be done here so other clients don't updat their UI
             NetworkPlayerUIController.Instance.UpdateInventoryUI(weapon.Holster, weapon.WeaponMode);
+        }
+
+        private void HandleProjectile(GameObject x)
+        {
+            var projectile = x.GetComponent<MProjectile>();
+
+            if (projectile != null)
+            {
+                SpawnProjectileServerRpc(x.transform.position, projectile.Velocity);
+            }
+        }
+        [Rpc(SendTo.Server)]
+        private void SpawnProjectileServerRpc(Vector3 position, Vector3 velocity)
+        {
+            MShootable shootable = currentWeapon as MShootable;
+            var projectileGO = Instantiate(shootable.Projectile, position, Quaternion.identity);
+            var projectile = projectileGO.GetComponent<MProjectile>();
+            projectile.Velocity = velocity;
+            projectile.Prepare(gameObject, shootable.Gravity, velocity, shootable.Layer, shootable.TriggerInteraction);
+            projectile.Fire(velocity);
+            projectile.GetComponent<NetworkObject>().Spawn();
         }
 
         void WeaponHitHandler(Vector3 position)
@@ -290,6 +288,7 @@ namespace MalbersAnimations.NetCode
                 var pickable = weapon.GetComponent<Pickable>();
                 pickUpDrop.Item = pickable;
                 pickUpDrop.PickUpItem();
+                pickable.enabled = false;
             }
             else
             {
@@ -304,6 +303,11 @@ namespace MalbersAnimations.NetCode
             var weapon = weaponGO.GetComponent<MWeapon>();
             weapon.OnHitPosition.RemoveListener((x)=> WeaponHitHandler(x));
             NetworkPlayerUIController.Instance.UpdateInventoryUI(weapon.Holster, weapon.WeaponMode);
+
+            if (weapon is MShootable)
+            {
+                ((MShootable)weapon).OnFireProjectile.RemoveListener((x) => HandleProjectile(x)); //Call the event for the weapon
+            }
         }
         #endregion
     }
