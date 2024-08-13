@@ -205,6 +205,7 @@ namespace MalbersAnimations.NetCode
         #region WeaponManagerEvents
 
         MWeapon currentWeapon;
+        MShootable lastShootable;
         void OnEquippedWeapon(GameObject weaponGO)
         {
             // Find the unique Id for the weapon to send to server and request pickup
@@ -215,7 +216,8 @@ namespace MalbersAnimations.NetCode
 
             if (weapon is MShootable)
             {
-                ((MShootable)weapon).OnFireProjectile.AddListener((x) => HandleProjectile(x)); //Call the event for the weapon
+                lastShootable = (MShootable)weapon;
+                lastShootable.OnFireProjectile.AddListener((x) => HandleProjectile(x)); //Call the event for the weapon
             }
 
             var networkWeapon = weaponGO.GetComponent<NetworkWeapon>();
@@ -240,11 +242,10 @@ namespace MalbersAnimations.NetCode
         [Rpc(SendTo.Server)]
         private void SpawnProjectileServerRpc(Vector3 position, Vector3 velocity)
         {
-            MShootable shootable = currentWeapon as MShootable;
-            var projectileGO = Instantiate(shootable.Projectile, position, Quaternion.identity);
+            var projectileGO = Instantiate(lastShootable.Projectile, position, Quaternion.identity);
             var projectile = projectileGO.GetComponent<MProjectile>();
             projectile.Velocity = velocity;
-            projectile.Prepare(gameObject, shootable.Gravity, velocity, shootable.Layer, shootable.TriggerInteraction);
+            projectile.Prepare(gameObject, lastShootable.Gravity, velocity, lastShootable.Layer, lastShootable.TriggerInteraction);
             projectile.Fire(velocity);
             projectile.GetComponent<NetworkObject>().Spawn();
         }
@@ -284,7 +285,13 @@ namespace MalbersAnimations.NetCode
             var weapon = FindObjectsByType<NetworkWeapon>(FindObjectsSortMode.None).First(x => x.networkID == uniqueWeaponId);
             if (weapon != null)
             {
+                
                 currentWeapon = weapon.GetComponent<MWeapon>();
+                if (currentWeapon is MShootable)
+                {
+                    lastShootable = (MShootable)currentWeapon;
+                    lastShootable.OnFireProjectile.AddListener((x) => HandleProjectile(x)); //Call the event for the weapon
+                }
                 var pickable = weapon.GetComponent<Pickable>();
                 pickUpDrop.Item = pickable;
                 pickUpDrop.PickUpItem();
