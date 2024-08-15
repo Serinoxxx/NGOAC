@@ -233,10 +233,16 @@ namespace MalbersAnimations.NetCode
         private void HandleProjectile(GameObject x)
         {
             var projectile = x.GetComponent<MProjectile>();
+            projectile.SetEnable(false);
 
             if (projectile != null)
             {
-                SpawnProjectileServerRpc(x.transform.position, projectile.Velocity);
+                var position = x.transform.position;
+                var velocity = projectile.Velocity;
+                //Destroy the projectile on the client, we only want the server to spawn it
+                x.name = "client side fish";
+                Destroy(x);
+                SpawnProjectileServerRpc(position, velocity);
             }
         }
         [Rpc(SendTo.Server)]
