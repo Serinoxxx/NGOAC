@@ -13,6 +13,7 @@ namespace MalbersAnimations.NetCode
     {
         private MShootable mShootable;
         private NetworkAnimal networkAnimal;
+        private MDisplayTrajectory displayTrajectory;
 
         private void Start()
         {
@@ -20,29 +21,56 @@ namespace MalbersAnimations.NetCode
 
             // Get the reference to MShootable using GetComponent
             mShootable = GetComponent<MShootable>();
+            displayTrajectory = GetComponent<MDisplayTrajectory>();
 
-            mShootable.OnEquiped.AddListener(AddFiredListener);
-            mShootable.OnUnequiped.AddListener(RemoveFiredListener);
+            mShootable.OnEquiped.AddListener(OnEquiped);
+            mShootable.OnUnequiped.AddListener(OnUnequiped);
+            
         }
 
-        private void RemoveFiredListener(Transform arg0)
+        private void OnUnequiped(Transform arg0)
         {
             if (networkAnimal == null) return;
 
+            displayTrajectory.enabled = false;
+
+            //Remove listeners
             mShootable.OnFireProjectile.RemoveListener(networkAnimal.SpawnProjectileOnOtherClients);
+            mShootable.OnFireProjectile.RemoveListener(DestroyProjectile);
+
         }
 
-        private void AddFiredListener(Transform arg0)
+        private void OnEquiped(Transform arg0)
         {
             networkAnimal = GetComponentInParent<NetworkAnimal>();
 
             if (networkAnimal == null) return;
 
+            if (networkAnimal.IsOwner)
+            {
+                displayTrajectory.enabled = true;
+                mShootable.Enabled = true;
+            }
+            else
+            {
+                mShootable.Enabled = false;
+            }
+
+
             if (mShootable != null)
             {
                 Debug.Log("MShootable component found. Subscribing to events.");
                 // Subscribe to the OnFireProjectile event of MShootable
-                mShootable.OnFireProjectile.AddListener(networkAnimal.SpawnProjectileOnOtherClients);
+                if (networkAnimal.IsOwner)
+                {
+                    //Only the owner should spawn the projectile on other clients
+                    mShootable.OnFireProjectile.AddListener(networkAnimal.SpawnProjectileOnOtherClients);
+                }
+                else
+                {
+                    //Destroy any projectile that is fired by other clients but triggered by this client
+                    mShootable.OnFireProjectile.AddListener(DestroyProjectile);
+                }
             }
             else
             {
@@ -50,7 +78,10 @@ namespace MalbersAnimations.NetCode
             }
         }
 
-
+        private void DestroyProjectile(GameObject arg0)
+        {
+            Destroy(arg0);
+        }
 
         // Make sure to clean up the event subscription when the object is destroyed
         private void OnDestroy()
@@ -61,6 +92,7 @@ namespace MalbersAnimations.NetCode
             if (mShootable != null)
             {
                 mShootable.OnFireProjectile.RemoveListener(networkAnimal.SpawnProjectileOnOtherClients);
+                mShootable.OnFireProjectile.RemoveListener(DestroyProjectile);
             }
         }
     }

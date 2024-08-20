@@ -198,11 +198,19 @@ public class NetworkAnimal : NetworkBehaviour
         projectileVelocity = velocity;
         projectileGravity = gravity;
         Debug.Log("SpawnProjectileOnOtherClientsRpc method called.");
+
         var mShootable = GetComponentInChildren<MShootable>();
-        mShootable.EquipProjectile();
-        mShootable.OnFireProjectile.AddListener(PrepareProjectile);
-        mShootable.FireProjectile();
-        mShootable.OnFireProjectile.RemoveListener(PrepareProjectile);
+        //Instantiate the projectile from the shootable and apply the position, rotation, velocity and gravity
+        var projectileGO = Instantiate(mShootable.Projectile, position, rotation);
+        var projectile = projectileGO.GetComponent<MProjectile>();
+        projectile.Prepare(gameObject, projectileGravity, projectileVelocity, projectile.m_hitLayer, projectile.TriggerInteraction);
+        projectileGO.transform.SetPositionAndRotation(projectilePosition, projectileRotation);
+        projectile.Fire();
+
+        //mShootable.EquipProjectile();
+        //mShootable.OnFireProjectile.AddListener(PrepareProjectile);
+        //mShootable.FireProjectile();
+        //mShootable.OnFireProjectile.RemoveListener(PrepareProjectile);
     }
 
     private void PrepareProjectile(GameObject projectileGO)

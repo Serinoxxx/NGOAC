@@ -214,11 +214,12 @@ namespace MalbersAnimations.NetCode
             //We own this weapon, so call the rpc to replicate a hit when we deal damage
             weapon.OnHitPosition.AddListener((x)=>WeaponHitHandler(x));
 
-            if (weapon is MShootable)
-            {
-                lastShootable = (MShootable)weapon;
-                lastShootable.OnFireProjectile.AddListener((x) => HandleProjectile(x)); //Call the event for the weapon
-            }
+            //if (weapon is MShootable)
+            //{
+            //    lastShootable = (MShootable)weapon;
+            //    Debug.Log("Adding projectile handler to " + lastShootable.gameObject.name);
+            //    lastShootable.OnFireProjectile.AddListener((x) => HandleProjectile(x)); //Call the event for the weapon
+            //}
 
             var networkWeapon = weaponGO.GetComponent<NetworkWeapon>();
             var uniqueWeaponId = networkWeapon.networkID;
@@ -230,31 +231,39 @@ namespace MalbersAnimations.NetCode
             NetworkPlayerUIController.Instance.UpdateInventoryUI(weapon.Holster, weapon.WeaponMode);
         }
 
-        private void HandleProjectile(GameObject x)
-        {
-            var projectile = x.GetComponent<MProjectile>();
-            projectile.SetEnable(false);
+        //private void HandleProjectile(GameObject x)
+        //{
+        //    Debug.Log("Handling projectile: " + x.name);
+        //    if (!IsOwner)
+        //    {
+        //        Debug.Log("Not owner, returning");
+        //        return;
+        //    }
 
-            if (projectile != null)
-            {
-                var position = x.transform.position;
-                var velocity = projectile.Velocity;
-                //Destroy the projectile on the client, we only want the server to spawn it
-                x.name = "client side fish";
-                Destroy(x);
-                SpawnProjectileServerRpc(position, velocity);
-            }
-        }
-        [Rpc(SendTo.Server)]
-        private void SpawnProjectileServerRpc(Vector3 position, Vector3 velocity)
-        {
-            var projectileGO = Instantiate(lastShootable.Projectile, position, Quaternion.identity);
-            var projectile = projectileGO.GetComponent<MProjectile>();
-            projectile.Velocity = velocity;
-            projectile.Prepare(gameObject, lastShootable.Gravity, velocity, lastShootable.Layer, lastShootable.TriggerInteraction);
-            projectile.Fire(velocity);
-            projectile.GetComponent<NetworkObject>().Spawn();
-        }
+        //    var projectile = x.GetComponent<MProjectile>();
+        //    projectile.SetEnable(false);
+
+        //    if (projectile != null)
+        //    {
+        //        var position = x.transform.position;
+        //        var velocity = projectile.Velocity;
+        //        //Destroy the projectile on the client, we only want the server to spawn it
+        //        x.name = "client side fish";
+        //        Destroy(x);
+        //        SpawnProjectileServerRpc(position, velocity);
+        //    }
+        //}
+        //[Rpc(SendTo.Server)]
+        //private void SpawnProjectileServerRpc(Vector3 position, Vector3 velocity)
+        //{
+        //    var projectileGO = Instantiate(lastShootable.Projectile, position, Quaternion.identity);
+        //    var projectile = projectileGO.GetComponent<MProjectile>();
+        //    projectile.Velocity = velocity;
+        //    projectile.Prepare(gameObject, lastShootable.Gravity, velocity, lastShootable.Layer, lastShootable.TriggerInteraction);
+        //    projectile.Fire(velocity);
+        //    projectile.GetComponent<NetworkObject>().Spawn();
+        //    Debug.Log("Spawning projectile on server for: " + gameObject.name);
+        //}
 
         void WeaponHitHandler(Vector3 position)
         {
@@ -293,11 +302,6 @@ namespace MalbersAnimations.NetCode
             {
                 
                 currentWeapon = weapon.GetComponent<MWeapon>();
-                if (currentWeapon is MShootable)
-                {
-                    lastShootable = (MShootable)currentWeapon;
-                    lastShootable.OnFireProjectile.AddListener((x) => HandleProjectile(x)); //Call the event for the weapon
-                }
                 var pickable = weapon.GetComponent<Pickable>();
                 pickUpDrop.Item = pickable;
                 pickUpDrop.PickUpItem();
@@ -316,12 +320,8 @@ namespace MalbersAnimations.NetCode
             var weapon = weaponGO.GetComponent<MWeapon>();
             weapon.OnHitPosition.RemoveListener((x)=> WeaponHitHandler(x));
             NetworkPlayerUIController.Instance.UpdateInventoryUI(weapon.Holster, weapon.WeaponMode);
-
-            if (weapon is MShootable)
-            {
-                ((MShootable)weapon).OnFireProjectile.RemoveListener((x) => HandleProjectile(x)); //Call the event for the weapon
-            }
         }
+
         #endregion
     }
 }
