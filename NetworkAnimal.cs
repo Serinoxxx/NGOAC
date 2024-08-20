@@ -19,9 +19,11 @@ public class NetworkAnimal : NetworkBehaviour
 
     public NetworkVariable<float> _healthValue = new NetworkVariable<float>(writePerm: NetworkVariableWritePermission.Owner);
     public NetworkVariable<float> _staminaValue = new NetworkVariable<float>(writePerm: NetworkVariableWritePermission.Owner);
+    public NetworkVariable<float> _visibilityValue = new NetworkVariable<float>(writePerm: NetworkVariableWritePermission.Owner);
 
     [SerializeField] StatID healthStatID;
     [SerializeField] StatID staminaStatID;
+    [SerializeField] StatID visibilityStatID;
 
     public override void OnNetworkSpawn()
     {
@@ -148,12 +150,14 @@ public class NetworkAnimal : NetworkBehaviour
         {
             _healthValue.Value = _stats.Stat_GetValue(healthStatID);
             _staminaValue.Value = _stats.Stat_GetValue(staminaStatID);
+            _visibilityValue.Value = _stats.Stat_GetValue(visibilityStatID);
         }
         //If we're not the owner, set the stat value to the networkVar value
         else
         {
             _stats.Stat_SetValue(healthStatID, _healthValue.Value);
             _stats.Stat_SetValue(staminaStatID, _staminaValue.Value);
+            _stats.Stat_SetValue(visibilityStatID, _visibilityValue.Value);
         }
     }
 
